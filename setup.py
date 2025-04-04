@@ -1,11 +1,11 @@
 from setuptools import find_packages, setup
 
 setup(
-    name="quickuse",
+    name="aiworker-kanban",
     version="0.1.1",
     author="zhaoxuefeng",
-    author_email=" ",
-    description="一个自用的包",
+    author_email="823042332@qq.com",
+    description="一个看板调度能力的包",
     url="",
     packages=find_packages(),
     install_requires=[

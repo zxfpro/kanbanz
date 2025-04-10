@@ -13,9 +13,13 @@ uv export --format requirements-txt > requirements.txt
 mkdocs serve # 预览
 mkdocs gh-deploy # 同步到github网站
 ```
-
+### 发布
+```
+uv build
+uv publish
+```
 ### 运行测试并同步到测试服务
 ```
-uv run pytest --html=/Users/zhaoxuefeng/GitHub/aiworker/html/kanban.html
+bash run_test.sh
 ```
 

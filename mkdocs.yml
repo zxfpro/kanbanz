@@ -1,4 +1,4 @@
-site_name: KanBan
+site_name: KanBanZ
 
 theme:
   name: "material"
@@ -25,6 +25,5 @@ plugins:
 nav:
   - Index: index.md
   - Tutorial: 
-    - kanban_manager: kanban_manager.md
-    - kanban_system: kanban_system.md
-  - Reference: reference.md
+    - API_Document: kanban_core.md
+    - Use Case:  use_case.md

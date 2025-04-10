@@ -1,9 +1,4 @@
-"""
-更加偏重系统级别
-
-"""
-
-from .manager import KanbanManager,Pool
+```python
 
 class KanbanSystem():
     """
@@ -80,7 +75,10 @@ class KanbanSystem():
         pass
 
 
+```
+
+```python
 
 
 
-    
+```

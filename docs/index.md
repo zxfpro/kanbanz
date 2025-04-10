@@ -1,12 +1,6 @@
-# Welcome to KanBan
+# Welcome to KanBanZ
 
-
-## Others
-
-The project is useful for Python project with packaging and documentation.
+## 这是我们计划提供的能力
 
 ![](1.png)
 
-## ww
-
-![](2.png)

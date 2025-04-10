@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#pytest-html
 
-project="kanban"
+project="kanbanz"
 uv run pytest --html=$test_html_path/$project.html

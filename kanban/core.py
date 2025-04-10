@@ -1,11 +1,9 @@
 """
 kanban manager
-
 """
-
+from enum import Enum
 import json
 import re
-from enum import Enum
 
 class Pool(Enum):
     """
@@ -19,48 +17,75 @@ class Pool(Enum):
     酱油池 ='酱油池'
 
 
-class KanbanManager():
+class Kanban():
     """
-    
+    看板管理工具
     """
     def __init__(self,kanban_path:str):
         """
-        
+        kanban_path 路径
         """
         self.kanban_path = kanban_path
         self.kanban_dict = {}
 
-    def pull(self):
+    def pull(self) -> None:
         """
-        从文档拉取信息到
+        从文档拉取信息到 kanban_dict 属性。
+
+        该方法打开指定的看板路径文件，读取其内容，并使用 _read 方法解析文本，
+        将解析后的数据存储到 kanban_dict 属性中。
         """
-        with open(self.kanban_path,'r') as f:
+        with open(self.kanban_path, 'r') as f:
             text = f.read()
         self.kanban_dict = self._read(text)
 
-
-    def push(self):
+    def push(self) -> None:
         """
-        
+        将 kanban_dict 属性中的信息写入到文档。
+
+        该方法使用 _write 方法将 kanban_dict 属性中的数据转换为文本格式，
+        然后将该文本写入到指定的看板路径文件中。
         """
         text = self._write(self.kanban_dict)
-        with open(self.kanban_path,'w') as f:
+        with open(self.kanban_path, 'w') as f:
             f.write(text)
 
+    def insert(self, text: str, pool: Pool) -> None:
+        """
+        在指定的池中插入一条新的任务信息。
 
-    def insert(self,text:str,pool:Pool):
-        """
-        将pool 中添加信息
-        """
-        self.kanban_dict[pool.value].append({'status': ' ', 'description': text, 'id':12, 'level': 2})
+        Args:
+            text (str): 任务的描述信息。
+            pool (Pool): 要插入任务的池。
 
+        Returns:
+            None
+        """
+        self.kanban_dict[pool.value].append({'status': ' ', 'description': text, 'id': 12, 'level': 2})
 
-    def pop(self,inputs:str,by:str,pool:Pool):
+    def pop(self, inputs: str, by: str, pool: Pool) -> None:
         """
-        将pool 中删除信息
+        从指定的池中删除一条任务信息。
+
+        Args:
+            inputs (str): 用于匹配的任务信息，可以是描述或ID。
+            by (str): 匹配的方式，'id' 或 'description'。
+            pool (Pool): 要从中删除任务的池。
+
+        Returns:
+            None
         """
-        def delete_by_description(data, description):
-            """按描述删除数据列"""
+        def delete_by_description(data: list, description: str) -> list:
+            """
+            按描述删除数据列。
+
+            Args:
+                data (list): 任务列表。
+                description (str): 要匹配的描述信息。
+
+            Returns:
+                list: 删除后的任务列表。
+            """
             for i, item in enumerate(data):
                 if item.get('description') == description:
                     del data[i]
@@ -68,8 +93,17 @@ class KanbanManager():
             print(f"未找到描述为 '{description}' 的数据列")
             return data
 
-        def delete_by_id(data, target_id):
-            """按ID删除数据列"""
+        def delete_by_id(data: list, target_id: str) -> list:
+            """
+            按ID删除数据列。
+
+            Args:
+                data (list): 任务列表。
+                target_id (str): 要匹配的ID。
+
+            Returns:
+                list: 删除后的任务列表。
+            """
             for i, item in enumerate(data):
                 if item.get('id') == target_id:
                     del data[i]
@@ -79,10 +113,9 @@ class KanbanManager():
 
         data = self.kanban_dict[pool.value]
         if by == 'id':
-            delete_by_id(data,inputs)
-        elif by =='description':
-            delete_by_description(data,inputs)
-        
+            delete_by_id(data, inputs)
+        elif by == 'description':
+            delete_by_description(data, inputs)
 
     def _read(self,text):
         # 提取池的名称和内容
@@ -119,7 +152,6 @@ class KanbanManager():
             kanban_dict[pool_name] = task_list
         return kanban_dict
     
-
     def _write(self,kanban_dict):
         """
         将字典格式的Kanban板转换为标准Markdown格式的文本。
@@ -162,8 +194,3 @@ kanban-plugin: board
         return head + markdown.strip() + tail
 
 
-if __name__ == "__main__":
-    kanban_path = "/Users/zhaoxuefeng/本地文稿/百度空间/cloud/Obsidian/知识体系尝试/工作/工程二开UseCase/ceshi.md"
-    cm = KanbanManager(kanban_path)
-    cm.pull()
-    print(cm.kanban_dict,'canvs')

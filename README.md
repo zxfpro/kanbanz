@@ -21,4 +21,4 @@ uv publish
 ```
 bash run_test.sh
 ```
-
+mkdocs-mermaid2-plugin

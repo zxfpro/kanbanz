@@ -10,7 +10,7 @@ uv export --format requirements-txt > requirements.txt
 ### 更新文档
 ```
 mkdocs serve # 预览
-mkdocs gh-deploy # 同步到github网站
+mkdocs gh-deploy -c  # 同步到github网站
 ```
 ### 发布
 ```

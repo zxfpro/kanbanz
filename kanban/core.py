@@ -117,8 +117,40 @@ class Kanban():
         elif by == 'description':
             delete_by_description(data, inputs)
 
+    def select_by_pool(self, pool:Pool)->list[str]:
+        """通过事件池进行选择
+
+        Args:
+            pool (Pool): 枚举的池类型
+
+        Returns:
+            list[str]: 返回对应的事件名称列表
+        """
+
+        pools = self.kanban_dict.get(pool.value)
+        return [des.get("description") for des in pools]
+        
+    def select_by_tags(self, tags_name:str):
+        pass
+
+    def select_by_word(self,word:str)->list[str]:
+        """通过关键字选择
+
+        Args:
+            word (str): 关键字
+
+        Returns:
+            list[str]: 返回的查询到的core内容
+        """
+        output = []
+        for p,content in self.kanban_dict.items():
+            for core in content:
+                if word in core.get('description'):
+                    output.append(core.get("description"))
+        return output
+
+
     def _read(self,text):
-        # 提取池的名称和内容
         pool_pattern = re.compile(r'## ([\s\S]+?)(?=\n## |\n\n\n|\n\*\*\*)')
         pools = pool_pattern.findall(text)
         # 提取任务列表
@@ -153,15 +185,6 @@ class Kanban():
         return kanban_dict
     
     def _write(self,kanban_dict):
-        """
-        将字典格式的Kanban板转换为标准Markdown格式的文本。
-        
-        Args:
-            kanban_dict (dict): 字典格式的Kanban板。
-            
-        Returns:
-            str: 标准Markdown格式的文本。
-        """
         markdown = ""
         
         for pool_name, tasks in kanban_dict.items():

@@ -21,7 +21,6 @@ plugins:
   - search:
       lang: en
   - mkdocstrings # 自动搜索代码
-  - mermaid2
 
 nav:
   - Index: index.md

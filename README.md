@@ -10,7 +10,7 @@ uv export --format requirements-txt > requirements.txt
 ### 更新文档
 ```
 mkdocs serve # 预览
-mkdocs gh-deploy -c  # 同步到github网站
+mkdocs gh-deploy -d ../.temp # 同步到github网站
 ```
 ### 发布
 ```
@@ -21,4 +21,3 @@ uv publish
 ```
 bash run_test.sh
 ```
-mkdocs-mermaid2-plugin

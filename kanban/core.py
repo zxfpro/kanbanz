@@ -2,8 +2,7 @@
 kanban manager
 """
 from enum import Enum
-import json
-import re
+from .utils import read,write
 
 class Pool(Enum):
     """
@@ -37,7 +36,7 @@ class Kanban():
         """
         with open(self.kanban_path, 'r') as f:
             text = f.read()
-        self.kanban_dict = self._read(text)
+        self.kanban_dict = read(text)
 
     def push(self) -> None:
         """
@@ -46,7 +45,7 @@ class Kanban():
         该方法使用 _write 方法将 kanban_dict 属性中的数据转换为文本格式，
         然后将该文本写入到指定的看板路径文件中。
         """
-        text = self._write(self.kanban_dict)
+        text = write(self.kanban_dict)
         with open(self.kanban_path, 'w') as f:
             f.write(text)
 
@@ -76,16 +75,6 @@ class Kanban():
             None
         """
         def delete_by_description(data: list, description: str) -> list:
-            """
-            按描述删除数据列。
-
-            Args:
-                data (list): 任务列表。
-                description (str): 要匹配的描述信息。
-
-            Returns:
-                list: 删除后的任务列表。
-            """
             for i, item in enumerate(data):
                 if item.get('description') == description:
                     del data[i]
@@ -94,16 +83,6 @@ class Kanban():
             return data
 
         def delete_by_id(data: list, target_id: str) -> list:
-            """
-            按ID删除数据列。
-
-            Args:
-                data (list): 任务列表。
-                target_id (str): 要匹配的ID。
-
-            Returns:
-                list: 删除后的任务列表。
-            """
             for i, item in enumerate(data):
                 if item.get('id') == target_id:
                     del data[i]
@@ -148,72 +127,4 @@ class Kanban():
                 if word in core.get('description'):
                     output.append(core.get("description"))
         return output
-
-
-    def _read(self,text):
-        pool_pattern = re.compile(r'## ([\s\S]+?)(?=\n## |\n\n\n|\n\*\*\*)')
-        pools = pool_pattern.findall(text)
-        # 提取任务列表
-        task_pattern = re.compile(r'- \[([x ])\]([\s\S]+?)(?=\n|$)')
-
-        kanban_dict = {}
-
-        for pool in pools:
-            # 分割池的名称和内容
-            try:
-                pool_name, pool_content = pool.split('\n', 1)
-                pool_name = pool_name.strip()
-            except ValueError:
-                pool_name = pool
-                pool_content = ""
-            
-            # 提取任务列表
-            tasks = task_pattern.findall(pool_content)
-            
-            # 将任务整理为字典格式
-            task_list = []
-            for task in tasks:
-                status = task[0].strip()
-                status = status or " "
-                description = task[1].strip()
-                task_list.append({
-                    "status": status,
-                    "description": description
-                })
-            
-            kanban_dict[pool_name] = task_list
-        return kanban_dict
-    
-    def _write(self,kanban_dict):
-        markdown = ""
-        
-        for pool_name, tasks in kanban_dict.items():
-            # 添加池的标题
-            markdown += f"## {pool_name}\n\n"
-            
-            # 添加任务列表
-            for task in tasks:
-                status = task["status"]
-                description = task["description"].strip()
-                markdown += f"- [{status}] {description}\n"
-            
-            # 池之间添加空行
-            markdown += "\n"
-        head = """---
-
-kanban-plugin: board
-
----
-"""
-        
-        tail = """
-        
-%% kanban:settings
-```
-{"kanban-plugin":"board","list-collapse":[false,false,false,false,false,false],"link-date-to-daily-note":true,"tag-sort":[{"tag":""}],"move-tags":false,"lane-width":350,"tag-colors":[]}
-```
-%%
-"""
-        return head + markdown.strip() + tail
-
 

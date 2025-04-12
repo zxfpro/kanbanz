@@ -9,7 +9,16 @@ import pytest
 from kanban import Kanban,Pool
 
 
-def test_pull():
+
+
+@pytest.fixture
+def kanb():
+    Kanban()
+
+
+
+def test_pull(text:str,work:str):
+
     kanban_path = "/Users/zhaoxuefeng/GitHub/obsidian/工作/实验室/ceshi.md"
     cm = Kanban(kanban_path)
     cm.pull()

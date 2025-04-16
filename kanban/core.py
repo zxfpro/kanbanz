@@ -128,3 +128,20 @@ class Kanban():
                     output.append(core.get("description"))
         return output
 
+    def select_by_word_and_pool(self,word:str,pool:Pool)->list[str]:
+        """通过关键字选择
+
+        Args:
+            word (str): 关键字
+
+        Returns:
+            list[str]: 返回的查询到的core内容
+        """
+        output = []
+
+        content = self.kanban_dict.get(pool.value)
+        for core in content:
+            if word in core.get('description'):
+                output.append(core.get("description"))
+
+        return output

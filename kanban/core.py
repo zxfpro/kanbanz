@@ -34,7 +34,7 @@ class Kanban():
         该方法打开指定的看板路径文件，读取其内容，并使用 _read 方法解析文本，
         将解析后的数据存储到 kanban_dict 属性中。
         """
-        with open(self.kanban_path, 'r') as f:
+        with open(self.kanban_path, 'r', encoding="utf-8") as f:
             text = f.read()
         self.kanban_dict = read(text)
 
@@ -46,7 +46,7 @@ class Kanban():
         然后将该文本写入到指定的看板路径文件中。
         """
         text = write(self.kanban_dict)
-        with open(self.kanban_path, 'w') as f:
+        with open(self.kanban_path, 'w', encoding="utf-8") as f:
             f.write(text)
 
     def insert(self, text: str, pool: Pool) -> None:
@@ -60,15 +60,16 @@ class Kanban():
         Returns:
             None
         """
-        self.kanban_dict[pool.value].append({'status': ' ', 'description': text, 'id': 12, 'level': 2})
+        self.kanban_dict[pool.value].append({'status': ' ',
+                                             'description': text, 
+                                             'id': 12, 'level': 2})
 
-    def pop(self, inputs: str, by: str, pool: Pool) -> None:
+    def pop(self, text: str, pool: Pool) -> list["task"]:
         """
         从指定的池中删除一条任务信息。
 
         Args:
-            inputs (str): 用于匹配的任务信息，可以是描述或ID。
-            by (str): 匹配的方式，'id' 或 'description'。
+            text (str): 用于匹配的任务信息，可以是描述或ID。
             pool (Pool): 要从中删除任务的池。
 
         Returns:
@@ -82,22 +83,11 @@ class Kanban():
             print(f"未找到描述为 '{description}' 的数据列")
             return data
 
-        def delete_by_id(data: list, target_id: str) -> list:
-            for i, item in enumerate(data):
-                if item.get('id') == target_id:
-                    del data[i]
-                    return data
-            print(f"未找到ID为 '{target_id}' 的数据列")
-            return data
-
         data = self.kanban_dict[pool.value]
-        if by == 'id':
-            delete_by_id(data, inputs)
-        elif by == 'description':
-            delete_by_description(data, inputs)
+        return delete_by_description(data, text)
 
-    def select_by_pool(self, pool:Pool)->list[str]:
-        """通过事件池进行选择
+    def get_tasks_in(self, pool:Pool)->list[str]:
+        """获取事件池中的任务
 
         Args:
             pool (Pool): 枚举的池类型
@@ -108,40 +98,27 @@ class Kanban():
 
         pools = self.kanban_dict.get(pool.value)
         return [des.get("description") for des in pools]
-        
-    def select_by_tags(self, tags_name:str):
-        pass
 
-    def select_by_word(self,word:str)->list[str]:
-        """通过关键字选择
+    def get_task_by_word(self,word:str, pool:Pool = None)->list[str]:
+        """查询任务通过关键字
 
         Args:
             word (str): 关键字
+            pool (Pool, optional): 任务池,枚举类型. Defaults to None.
 
         Returns:
-            list[str]: 返回的查询到的core内容
+            list[str]: 返回查询到的任务列表
         """
         output = []
-        for p,content in self.kanban_dict.items():
+        if pool is None:
+            for _ , content in self.kanban_dict.items():
+                for core in content:
+                    if word in core.get('description'):
+                        output.append(core.get("description"))
+        else:
+            content = self.kanban_dict.get(pool.value)
             for core in content:
                 if word in core.get('description'):
                     output.append(core.get("description"))
-        return output
-
-    def select_by_word_and_pool(self,word:str,pool:Pool)->list[str]:
-        """通过关键字选择
-
-        Args:
-            word (str): 关键字
-
-        Returns:
-            list[str]: 返回的查询到的core内容
-        """
-        output = []
-
-        content = self.kanban_dict.get(pool.value)
-        for core in content:
-            if word in core.get('description'):
-                output.append(core.get("description"))
 
         return output

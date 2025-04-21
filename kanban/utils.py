@@ -41,7 +41,10 @@ def write(kanban_dict):
     
     for pool_name, tasks in kanban_dict.items():
         # 添加池的标题
-        markdown += f"## {pool_name}\n\n"
+        if '完成' in pool_name:
+            markdown += f"## {pool_name}\n\n**完成**\n"
+        else:
+            markdown += f"## {pool_name}\n\n"
         
         # 添加任务列表
         for task in tasks:
@@ -73,5 +76,4 @@ kanban-plugin: board
 %%
 """
     return head + markdown.strip() + tail
-
 

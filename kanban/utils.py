@@ -2,6 +2,7 @@
 import json
 import re
 
+
 def read(text):
     pool_pattern = re.compile(r'## ([\s\S]+?)(?=\n## |\n\n\n|\n\*\*\*)')
     pools = pool_pattern.findall(text)

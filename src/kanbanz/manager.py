@@ -1,31 +1,22 @@
 
-import requests
-from datetime import datetime
+from .core import Pool, Kanban
+from .utils import sync_obsidian_github,controlKanban
 from grapherz.canvas.core import Canvas,Color
-from kanban.core import Pool,Kanban
-from contextlib import contextmanager
-from ..scripts.aifunc import give_a_task_time,generate_schedule
-from reallife import KANBAN_PATH,WORK_CANVAS_PATH,Date
-from .status import status
-from ..scripts.applescript import Calulate,Notes,Reminder
-from .utils import parse_execution_jiangyou_pool,parse_execution_pool, read_file
-from .utils import git_pull, git_push
-import asyncio
 
-date_c = Date()
-date = date_c.date
 
-@contextmanager
-def controlKanban(kanban:Kanban):
-    kanban.pull()
-    yield kanban
-    kanban.push()
 
-@contextmanager
-def sync_obsidian_github(commit:str):
-    git_pull("obsidian")
-    yield
-    git_push('obsidian',commit=commit)
+def give_a_task_time(task:str)->str:
+    from llmada import GoogleAdapter
+    from promptlibz import Templates,TemplateType
+    llm = GoogleAdapter()
+    template = Templates(TemplateType.ESTIMATE_DURATION)
+    prompt = template.format(task=task)
+
+    completion = llm.product(prompt)
+    if completion and len(completion)<5:
+        return completion + " "+ task
+    else:
+        return "2P" + " "+ task
 
 
 class KanBanManager():
@@ -35,7 +26,6 @@ class KanBanManager():
         self.kanban = Kanban(self.kanban_path)
         self.main_path = "/Users/zhaoxuefeng/GitHub/obsidian/工作"
 
-    @status(task="同步预备池",date=date,run_only=True)
     def sync_ready(self):
         def encode(i,project_name):
             return project_name+'-'+i
@@ -64,7 +54,6 @@ class KanBanManager():
                             kb.insert(text=encode(i,project_name),pool=Pool.预备池)
         return 'success'
 
-    @status(task="同步就绪池",date=date,run_only=True)
     def sync_order(self):
         with sync_obsidian_github("调整优先级"):
             with controlKanban(self.kanban) as kb:
@@ -78,7 +67,6 @@ class KanBanManager():
                         kb.insert(text=task_,pool=Pool.就绪池)
         return 'success'
 
-    @status(task="同步执行池",date=date,run_only=True)
     def sync_run(self)->str:
         with sync_obsidian_github("同步到执行池"):
             with controlKanban(self.kanban) as kb:
@@ -97,8 +85,7 @@ class KanBanManager():
                     elif all_task_time < 8:
                         pass
         return 'success'
-    
-    @status(task="回收未完成的任务",date=date,run_only=True)
+
     def sync_run2order(self):
         with controlKanban(self.kanban) as kb:
             tasks = kb.get_tasks_in(Pool.执行池)
@@ -109,7 +96,6 @@ class KanBanManager():
             
         return 'success'
 
-    @status(task="任务完成的任务",date=date,run_only=True)
     def sync_run2over(self,task:str,
                       canvas_path:str):
 
@@ -151,7 +137,6 @@ class KanBanManager():
 
         return 'success'
 
-    @status(task="同步记录",date=date,run_only=False)
     def add_tips(self,task:str):
         """从执行池添加到完成池
         1 将task从执行池添加到完成池
@@ -164,23 +149,4 @@ class KanBanManager():
         """
         with controlKanban(self.kanban) as kb:
             kb.insert(text=task,pool=Pool.预备池)
-        return 'success'
-
-    @status(task="同步体重",date=date,run_only=True)
-    def sync_weight(self)->str:
-        """
-        同步体重
-        """
-
-        url = f"http://101.201.244.227:8000/weight/{date}"
-        response = requests.get(url)
-        result = response.json().get('weight')
-        x = f"""---
-番茄: 14
-体重: {result}
----
-"""
-
-        with open(self.main_path + f'/日记/{date}.md','a') as f:
-            f.write(x)
         return 'success'

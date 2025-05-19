@@ -1,6 +1,49 @@
 
-import json
+from contextlib import contextmanager
 import re
+import os
+
+def git_pull(repo: str):
+    """拉取 git 仓库最新更改
+    Args:
+        repo (str): 仓库名称 (例如 'my-awesome-project')
+    """
+    repo_path = os.path.join("/Users/zhaoxuefeng/GitHub", repo)
+    # 切换目录并执行 git pull
+    # git pull 默认会尝试拉取当前分支对应的远程分支
+    command = f"cd {repo_path} && git pull"
+    print(f"Executing command: {command}") # 打印执行的命令，方便调试
+    os.system(command)
+    print(f"Pull command finished for repo: {repo}")
+
+
+def git_push(repo: str,commit:str='test'):
+    """推送 git 仓库更改到远程
+    Args:
+        repo (str): 仓库名称 (例如 'my-awesome-project')
+    """
+    repo_path = os.path.join("/Users/zhaoxuefeng/GitHub", repo)
+    # 切换目录并执行 git push
+    # git push 默认会尝试推送当前分支到其对应的远程分支
+    command = f"cd {repo_path} && git commit -a -m {commit} && git push"
+    print(f"Executing command: {command}") # 打印执行的命令，方便调试
+    os.system(command)
+    print(f"Push command finished for repo: {repo}")
+
+
+@contextmanager
+def controlKanban(kanban):
+    kanban.pull()
+    yield kanban
+    kanban.push()
+
+@contextmanager
+def sync_obsidian_github(commit:str):
+    git_pull("obsidian")
+    yield
+    git_push('obsidian',commit=commit)
+
+
 
 
 def read(text):

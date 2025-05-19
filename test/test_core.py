@@ -1,21 +1,15 @@
-import sys
-import os
-# 将项目根目录添加到 Python 路径
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import pytest
 
 from kanbanz import Kanban,Pool
 
-
 @pytest.fixture
 def kanban_create():
-    kanban_path = "/Users/zhaoxuefeng/GitHub/obsidian/工作/实验室/ceshi.md"
+    kanban_path = "/Users/zhaoxuefeng/GitHub/obsidian/实验室/ceshi.md"
     cm = Kanban(kanban_path)
     cm.pull()
 
-
     yield cm
-
     cm.push()
 
 

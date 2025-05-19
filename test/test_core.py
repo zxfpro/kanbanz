@@ -4,7 +4,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import pytest
 
-from kanban import Kanban,Pool
+from kanbanz import Kanban,Pool
 
 
 @pytest.fixture

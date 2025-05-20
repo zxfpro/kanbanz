@@ -21,9 +21,8 @@ def give_a_task_time(task:str)->str:
 
 class KanBanManager():
     def __init__(self,kanban_path,pathlib):
-        self.kanban_path = kanban_path
         self.pathlib = pathlib
-        self.kanban = Kanban(self.kanban_path)
+        self.kanban = Kanban(kanban_path)
         self.main_path = "/Users/zhaoxuefeng/GitHub/obsidian/工作"
 
     def sync_ready(self):

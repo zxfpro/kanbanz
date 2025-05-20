@@ -39,11 +39,10 @@ def controlKanban(kanban):
 
 @contextmanager
 def sync_obsidian_github(commit:str):
-    git_pull("obsidian")
+    # TODO 
+    # git_pull("obsidian")
     yield
-    git_push('obsidian',commit=commit)
-
-
+    # git_push('obsidian',commit=commit)
 
 
 def read(text):

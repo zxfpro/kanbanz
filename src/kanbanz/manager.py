@@ -25,6 +25,10 @@ class KanBanManager():
         self.kanban = Kanban(kanban_path)
         self.main_path = "/Users/zhaoxuefeng/GitHub/obsidian/工作"
 
+
+    def get_info_from_pathlib(self):
+        
+
     def sync_ready(self):
         def encode(i,project_name):
             return project_name+'-'+i

@@ -49,6 +49,8 @@ class Kanban():
         with open(self.kanban_path, 'w', encoding="utf-8") as f:
             f.write(text)
 
+    
+
     def insert(self, text: str, pool: Pool) -> None:
         """
         在指定的池中插入一条新的任务信息。

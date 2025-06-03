@@ -6,13 +6,17 @@ from grapherz.canvas.core import Canvas,Color
 
 
 def give_a_task_time(task:str)->str:
-    from llmada import GoogleAdapter
+    from llmada import GoogleAdapter,BianXieAdapter
     from promptlibz import Templates,TemplateType
-    llm = GoogleAdapter()
+
+    llm = BianXieAdapter()
     template = Templates(TemplateType.ESTIMATE_DURATION)
     prompt = template.format(task=task)
-
-    completion = llm.product(prompt)
+    try:
+        completion = llm.product(prompt)
+    except Exception as e:
+        print(f'大模型服务未连接: {e}')
+        completion = "大模型服务未连接"
     if completion and len(completion)<5:
         return completion + " "+ task
     else:

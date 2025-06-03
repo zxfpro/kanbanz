@@ -27,6 +27,7 @@ class KanBanManager():
 
 
     def get_info_from_pathlib(self):
+        pass
         
 
     def sync_ready(self):
@@ -38,23 +39,23 @@ class KanBanManager():
                 if i.get('text') in pause:
                     return True
             return False
-        with sync_obsidian_github("同步预备池"):
-            for path in self.pathlib:
-                canvas_path=self.main_path+path
-                try:
-                    canvas = Canvas(file_path=canvas_path)
-                except FileNotFoundError as e:
-                    print(e)
-                    continue
-                with controlKanban(self.kanban) as kb:
-                    project_name = canvas_path.rsplit('/',2)[-2] 
-                    pauses = kb.get_tasks_in(pool=Pool.阻塞池)
-                    readys = kb.get_tasks_in(pool=Pool.预备池)
 
-                    nodes = [i.get('text') or '' for i in canvas.select_by_color(Color.yellow,type='node') if not save_in_pauses(i,pauses=pauses)]
-                    for i in nodes:
-                        if i not in readys:
-                            kb.insert(text=encode(i,project_name),pool=Pool.预备池)
+        for path in self.pathlib:
+            canvas_path=self.main_path+path
+            try:
+                canvas = Canvas(file_path=canvas_path)
+            except FileNotFoundError as e:
+                print(e)
+                continue
+            with controlKanban(self.kanban) as kb:
+                project_name = canvas_path.rsplit('/',2)[-2] 
+                pauses = kb.get_tasks_in(pool=Pool.阻塞池)
+                readys = kb.get_tasks_in(pool=Pool.预备池)
+
+                nodes = [i.get('text') or '' for i in canvas.select_by_color(Color.yellow,type='node') if not save_in_pauses(i,pauses=pauses)]
+                for i in nodes:
+                    if i not in readys:
+                        kb.insert(text=encode(i,project_name),pool=Pool.预备池)
         return 'success'
 
     def sync_order(self):
